@@ -1,0 +1,36 @@
+#V2
+info for db;
+create user:john set name.first = 'John', name.last = 'Doe', name.full = string::join(' ', name.first, name.last);
+update user:john set email = "john@doe.tld";
+select * from user;
+select * from user where name.first = "John";
+select * from user where name.first = "Johns";
+select * from user where name.first = "John";
+select * from user;
+delete user:john;
+select * from user;
+select * from note;
+select * from note FETCH;
+select * from note FETCH user;
+select * from note;
+select * from user,
+select * from user;
+select email from user;
+delete from user where email = 'foo@bar';
+select email from user;
+delete from user;
+select email from user;
+select * from user;
+select * from note;
+select * from user;
+delete from user;
+delete from note;
+select * from note;
+select * from user;
+select * from user,
+select * from user;
+select * from note;
+exit
+quit
+exit
+exit()

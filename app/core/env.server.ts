@@ -1,0 +1,8 @@
+export const {
+  DATABASE_URL,
+  SURREAL_USER,
+  SURREAL_PASS,
+  SURREAL_DATABASE,
+  SURREAL_NAMESPACE,
+  SESSION_SECRET,
+} = process.env;

@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  postgres:
+    image: surrealdb/surrealdb:latest
+    restart: always
+    environment:
+      - USER={SURREAL_USER}
+      - PASS={SURREAL_PASS}
+      - DB={SURREAL_DATABASE}
+      - NS={SURREAL_NAMESPACE}
+      # - DB_PATH={DB_PATH}
+      # - ADDR={ADDR}
+      # - BIND={BIND}
+      # - LOG={LOG}
+    ports:
+      - "8000:8000"
+    # volumes:
+    #   - ./postgres-data:/var/lib/postgresql/data
