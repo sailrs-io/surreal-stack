@@ -1,4 +1,5 @@
 import { db, getResults } from "../database.server";
+import type { Result } from 'surrealdb.js';
 import type { User } from "./user.server";
 
 type Note = {
@@ -14,11 +15,15 @@ export async function getNoteById(id: string): Promise<Note> {
 }
 
 export async function getNoteListItems({ userId }: { userId: User["id"] }) {
-  const res = await db.query<Note>("SELECT * FROM type::table($table) WHERE user = $userId;", {
+  const [response] = await db.query<Array<Result<Note[]>>>("SELECT * FROM type::table($table) WHERE user = $userId;", {
     table: "note",
     userId,
   });
-  return getResults(res);
+  if (response.error) {
+    console.error(response.error);
+    return [];
+  }
+  return response.result;
 }
 
 export async function createNote({
@@ -30,7 +35,7 @@ export async function createNote({
   title: string;
   userId: string;
 }) {
-  return db.create<Note>("note", {
+  return db.create<Omit<Note,'id'>>("note", {
     body,
     title,
     user: userId,

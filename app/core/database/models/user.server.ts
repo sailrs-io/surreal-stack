@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
-import { db, getResult } from "../database.server";
+import type { Result } from "surrealdb.js";
+import { db } from "../database.server";
 
 export type User = {
   id: string;
@@ -19,28 +20,31 @@ export async function getUserById(id: string) {
 }
 
 export async function getUserByEmail(email: string) {
-  const response = await db.query<User>(
+  const [response] = await db.query<Array<Result<User[]>>>(
     "SELECT * FROM type::table($table) WHERE email = $email;",
     {
       table: "user",
       email,
     }
   );
-  const ret = getResult<User>(response);
-  console.debug('getUserByEmail', ret);
-  return ret;
+  if (response.error) {
+    console.error(response.error);
+    return null;
+  }
+
+  if (response.result.length > 1) {
+    console.error("More than one user with the same email");
+  }
+
+  return response.result[0];
 }
 
 export async function createUser(email: string, password: string) {
   const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = await db.create<User>("user", {
+  return await db.create<Pick<User, 'email' | 'password'>>("user", {
     email,
     password: hashedPassword,
   });
-
-  console.debug('createUser', user);
-  return user;
 }
 
 export async function deleteUserByEmail(email: string) {

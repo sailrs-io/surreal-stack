@@ -5,8 +5,8 @@ import {
   DATABASE_URL,
   SURREAL_DATABASE,
   SURREAL_NAMESPACE,
-  SURREAL_PASS,
-  SURREAL_USER,
+  SURREAL_PASSWORD,
+  SURREAL_USERNAME,
 } from "../env.server";
 
 let db: Surreal;
@@ -30,8 +30,8 @@ if (process.env.NODE_ENV === "production") {
 
 function getClient() {
   invariant(typeof DATABASE_URL === "string", "DATABASE_URL env var not set");
-  invariant(typeof SURREAL_USER === "string", "SURREAL_USER env var not set");
-  invariant(typeof SURREAL_PASS === "string", "SURREAL_PASS env var not set");
+  invariant(typeof SURREAL_USERNAME === "string", "SURREAL_USERNAME env var not set");
+  invariant(typeof SURREAL_PASSWORD === "string", "SURREAL_PASSWORD env var not set");
   invariant(
     typeof SURREAL_NAMESPACE === "string",
     "SURREAL_NAMESPACE env var not set"
@@ -45,17 +45,10 @@ function getClient() {
 
   const isLocalHost = databaseUrl.hostname === "localhost";
 
-  const PRIMARY_REGION = isLocalHost ? null : process.env.PRIMARY_REGION;
   const FLY_REGION = isLocalHost ? null : process.env.FLY_REGION;
-
-  const isReadReplicaRegion = !PRIMARY_REGION || PRIMARY_REGION === FLY_REGION;
 
   if (!isLocalHost) {
     databaseUrl.host = `${FLY_REGION}.${databaseUrl.host}`;
-    if (!isReadReplicaRegion) {
-      // 5433 is the read-replica port
-      databaseUrl.port = "5433";
-    }
   }
 
   console.log(`🔌 setting up surreal client to ${databaseUrl.host}`);
@@ -66,7 +59,7 @@ function getClient() {
   // something in this file, you'll need to manually restart the server.
   const client = new Surreal(DATABASE_URL);
   // connect eagerly
-  client.signin({ user: SURREAL_USER, pass: SURREAL_PASS });
+  client.signin({ user: SURREAL_USERNAME, pass: SURREAL_PASSWORD });
   client.use(SURREAL_NAMESPACE, SURREAL_DATABASE);
 
   return client;
